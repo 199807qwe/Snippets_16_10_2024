@@ -38,19 +38,24 @@
                                 <a href="{% url "snippet-delete" snippet.id %}">
                                     <i style="color: red;" class="fa-solid fa-trash"></i>
                                 </a>
+                                <a href="{% url "snippet-edit" snippet.id %}">
+                                    <i style="color: red;" class="fa fa-edit"></i>
+                                </a>
                             </td>
                             <td>{{ snippet.lang }}</td>
-                            {# Ссылка на возможности форматирования дат #}
-                            {# https://docs.djangoproject.com/en/5.1/ref/templates/builtins/#std-templatefilter-date #}
                             <td>{{ snippet.creation_date | date:"d F Y H:i:s" }} </td>
                             {# Заготовка для edit'a #}
                             {# <td><a href="{% url "snippet-edit" snippet.id %}" class="btn btn-primary">Edit</a></td> #}
+                            
                             <td>
+                                <div style="display: flex; flex-direction: row;">
+                                    <a href="{% url "snippet-edit" snippet.id %}" class="btn btn-primary">Edit</a>
+                                    &nbsp;&nbsp;
                                 <form action="{% url "snippet-delete" snippet.id %}" method="POST">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
-
+                                </div>
                             </td>
                         </tr>
                     {% empty %}

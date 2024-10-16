@@ -47,11 +47,35 @@ def snippet_detail(request, snippet_id):
         return render(request, "pages/errors.html", context | {"error": f"Snippet with id={snippet_id} not found"})
     else:
         context["snippet"] = snippet
+        context["type"] = "view"
         return render(request, 'pages/snippet_detail.html', context)
 
 
 def snippet_edit(request, snippet_id):
-    pass
+    # pass
+    context = {'pagename': 'Редактирование сниппета'}
+    snippet = get_object_or_404(Snippet, id=snippet_id)
+    # 1 вариант - использование SnippetForm
+    if request.method == "GET":
+        form = SnippetForm(instance=snippet)
+        return render(request, "pages/add_snippet.html", context | {"form": form})
+    
+    # 2 вариант
+    # Получаем страница с данными сниппета
+    # if request.method == "GET":
+    #     context.update({
+    #         "snippet": snippet,
+    #         "type": "edit",
+    #         })
+    #     return render(request, 'pages/snippet_detail.html', context)
+    
+    # Получаем данные из формы и на их основе обновляем данный сниппет в БД
+    if request.method == "POST":
+        data_form = request.POST
+        snippet.name = data_form["name"]
+        snippet.code = data_form["code"]
+        snippet.save()
+        return redirect("snippets-list") # GET /snippets/list
 
 
 def snippet_delete(request, snippet_id):

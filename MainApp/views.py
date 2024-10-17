@@ -25,7 +25,10 @@ def add_snippet_page(request):
     if request.method == "POST":
         form = SnippetForm(request.POST)
         if form.is_valid():
-            form.save()
+            snippet = form.save(commit=False)
+            if request.user.is_authenticated:
+                snippet.user = request.user
+                snippet.save()
             # GET /snippets/list
             return redirect("snippets-list") # URL для списка сниппетов
         return render(request,'pages/add_snippet.html', {'form': form})
@@ -96,7 +99,11 @@ def login(request):
             auth.login(request, user)
         else:
             # Return error message
-            pass
+            context = {
+                "pagename": "PythonBin",
+                "errors": ["wrong username or password"],
+            }
+            return render(request, "pages/index.html", context)
     return redirect('home')
 def logout(request):
     auth.logout(request)

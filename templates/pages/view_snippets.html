@@ -29,6 +29,7 @@
                         <th scope="col">Дата создания</th>
                         <th scope="col">Действия</th>
                         <th scope="col">Пользователь</th>
+                        <th scope="col">Тип сниппета</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -36,12 +37,14 @@
                         <tr>
                             <td scope="row"> {{ snippet.id }}</td>
                             <td><a href="{% url "snippet-detail" snippet.id %}"> {{ snippet.name }} </a>
+                                {% if snippet.user == request.user %}
                                 <a href="{% url "snippet-delete" snippet.id %}">
                                     <i style="color: red;" class="fa-solid fa-trash"></i>
                                 </a>
                                 <a href="{% url "snippet-edit" snippet.id %}">
                                     <i style="color: red;" class="fa fa-edit"></i>
                                 </a>
+                                {% endif %}
                             </td>
                             <td>{{ snippet.lang }}</td>
                             <td>{{ snippet.creation_date | date:"d F Y H:i:s" }} </td>
@@ -49,6 +52,7 @@
                             {# <td><a href="{% url "snippet-edit" snippet.id %}" class="btn btn-primary">Edit</a></td> #}
                             
                             <td>
+                                {% if snippet.user == request.user %}
                                 <div style="display: flex; flex-direction: row;">
                                     <a href="{% url "snippet-edit" snippet.id %}" class="btn btn-primary">Edit</a>
                                     &nbsp;&nbsp;
@@ -57,8 +61,16 @@
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
                                 </div>
+                                {% endif %}
                             </td>
                             <td> {{ snippet.user.username }} </td>
+                            <td>
+                                {% if snippet.public %}
+                                    Публичный
+                                {% else %}
+                                    Приватный
+                                {% endif %}
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>

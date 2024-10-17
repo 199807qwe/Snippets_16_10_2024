@@ -19,6 +19,7 @@ python manage.py shell_plus --ipython
 
 ## Выгрузка и загрузка данных при работе с БД
 ### Выгрузить данные из БД
+Сниппеты
 ```
 python manage.py dumpdata MainApp --indent 4 > MainApp/fixtures/save_all.json
 ```
@@ -26,3 +27,9 @@ python manage.py dumpdata MainApp --indent 4 > MainApp/fixtures/save_all.json
 ```
 python manage.py loaddata MainApp/fixtures/save_all.json
 ```
+
+Пользователи
+```
+python manage.py dumpdata auth.user --indent 4 > MainApp/fixtures/users.json
+```
+

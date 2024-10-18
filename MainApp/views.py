@@ -2,7 +2,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from MainApp.models import Snippet
 from django.core.exceptions import ObjectDoesNotExist
-from MainApp.forms import SnippetForm
+from MainApp.forms import CommentForm,SnippetForm, UserRegistrationForm
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 
@@ -61,8 +61,10 @@ def snippet_detail(request, snippet_id):
     except ObjectDoesNotExist:
         return render(request, "pages/errors.html", context | {"error": f"Snippet with id={snippet_id} not found"})
     else:
+        comments_form = CommentForm()
         context["snippet"] = snippet
         context["type"] = "view"
+        context["comments_form"] = comments_form
         return render(request, 'pages/snippet_detail.html', context)
 
 @login_required
@@ -120,3 +122,31 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('home')
+
+def create_user(request):
+    context = {"pagename": "Регистрация нового пользователя"}
+    # Создаем новую форму при запросе GET
+    if request.method == "GET":
+        form = UserRegistrationForm()
+    
+    # Получаем данные из формы и на их основе создаем нового пользователя и сохраняем его в БД
+    if request.method == "POST":
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        
+    context['form'] = form
+    return render(request, "pages/registration.html", context)
+
+def comments_add(request):
+    if request.method == "POST":
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            snippet_id = request.POST.get("snippet_id")
+            snippet = Snippet.objects.get(id=snippet_id)
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            comment.snippet = snippet
+            comment.save()
+            return redirect('snippet-detail', snippet_id=snippet.id)
